@@ -3,14 +3,26 @@ version: '3.8'
 services:
   mongodb:
     image: mongo:latest
-    container_name: mongodb
     ports:
       - '27017:27017'
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
       - mongodb_data:/data/db
+
+    networks:
+      - nest-network
+
+  reservations:
+    build:
+      context: .
+      dockerfile: ./apps/reservations/Dockerfile
+      target: development
+    command: pnpm run start:dev reservations
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - mongodb
     networks:
       - nest-network
 
